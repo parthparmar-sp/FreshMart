@@ -43,8 +43,8 @@ async function run() {
     const users = [
       {
         name: "Admin User",
-        email: "admin@freshmart.com",
-        password: "Admin123!",
+        email: "admin2711@gmail.com",
+        password: "admin11",
         role: "admin",
       },
       {
@@ -82,7 +82,7 @@ async function run() {
       return res.token;
     };
 
-    const adminToken = await login("admin@freshmart.com", "Admin123!");
+    const adminToken = await login("admin2711@gmail.com", "admin11");
     const vendorToken = await login("vendor@freshmart.com", "Vendor123!");
     const userToken = await login("user@freshmart.com", "User123!");
 

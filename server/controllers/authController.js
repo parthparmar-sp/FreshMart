@@ -8,6 +8,11 @@ export const registerUser = async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
 
+    // 🛑 Security Check: Block public admin registration
+    if (role === "admin") {
+      return res.status(403).json({ message: "Registration of admin role is restricted" });
+    }
+
     // Check if user exists
     const userExists = await User.findOne({ email });
     if (userExists) {

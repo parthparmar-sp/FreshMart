@@ -84,7 +84,6 @@ export default function Register() {
             >
               <option value="user">Customer</option>
               <option value="vendor">Vendor</option>
-              <option value="admin">Admin</option>
             </select>
           </div>
           <button
