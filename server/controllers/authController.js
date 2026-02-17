@@ -1,6 +1,7 @@
 import User from "../models/User.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import sendEmail from "../utils/sendEmail.js";
 
 // REGISTER
 export const registerUser = async (req, res) => {
@@ -24,6 +25,25 @@ export const registerUser = async (req, res) => {
       password: hashedPassword,
       role,
     });
+
+    // Send Welcome Email
+    try {
+      await sendEmail({
+        email: user.email,
+        subject: "Welcome to FreshMart!",
+        message: `Hi ${user.name},\n\nWelcome to FreshMart! We are excited to have you on board. Start shopping for fresh groceries now!\n\nBest Regards,\nThe FreshMart Team`,
+        html: `
+          <h1>Welcome to FreshMart!</h1>
+          <p>Hi <strong>${user.name}</strong>,</p>
+          <p>Welcome to FreshMart! We are excited to have you on board. Start shopping for fresh groceries now!</p>
+          <br/>
+          <p>Best Regards,<br/>The FreshMart Team</p>
+        `,
+      });
+    } catch (emailError) {
+      console.error("Email sending failed:", emailError.message);
+      // We don't return error here because user is already created
+    }
 
     res.status(201).json({
       message: "User registered successfully",

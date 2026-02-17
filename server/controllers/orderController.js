@@ -3,6 +3,7 @@ import Cart from "../models/Cart.js";
 import Product from "../models/Product.js";
 import PDFDocument from "pdfkit";
 import fs from "fs";
+import sendEmail from "../utils/sendEmail.js";
 
 export const createOrder = async (req, res) => {
   try {
@@ -74,6 +75,26 @@ export const createOrder = async (req, res) => {
     cart.items = [];
     await cart.save();
 
+    // Send Order Confirmation Email
+    try {
+      await sendEmail({
+        email: req.user.email,
+        subject: `Order Confirmation - #${order._id}`,
+        message: `Hi ${req.user.name},\n\nThank you for your order! Your order ID is ${order._id}. Total Amount: Rs. ${order.totalAmount}.\n\nWe will notify you once it's shipped.\n\nBest Regards,\nThe FreshMart Team`,
+        html: `
+          <h1>Order Confirmation</h1>
+          <p>Hi <strong>${req.user.name}</strong>,</p>
+          <p>Thank you for your order! Your order ID is <strong>#${order._id}</strong>.</p>
+          <p><strong>Total Amount:</strong> Rs. ${order.totalAmount}</p>
+          <p>We will notify you once it's shipped.</p>
+          <br/>
+          <p>Best Regards,<br/>The FreshMart Team</p>
+        `,
+      });
+    } catch (emailError) {
+      console.error("Order confirmation email failed:", emailError.message);
+    }
+
     res.status(201).json({
       message: "Order placed successfully",
       order
@@ -138,6 +159,26 @@ export const cancelOrder = async (req, res) => {
 
     order.status = 'Cancelled';
     const updatedOrder = await order.save();
+
+    // Send Cancellation Email
+    try {
+      // Ensure we have user email (might need populating if not already in req.user)
+      const userEmail = req.user.email;
+      await sendEmail({
+        email: userEmail,
+        subject: `Order Cancelled - #${order._id}`,
+        message: `Hi,\n\nYour order #${order._id} has been cancelled successfully.\n\nBest Regards,\nThe FreshMart Team`,
+        html: `
+          <h1>Order Cancelled</h1>
+          <p>Your order <strong>#${order._id}</strong> has been cancelled successfully.</p>
+          <br/>
+          <p>Best Regards,<br/>The FreshMart Team</p>
+        `,
+      });
+    } catch (emailError) {
+      console.error("Cancellation email failed:", emailError.message);
+    }
+
     res.json(updatedOrder);
   } catch (error) {
     res.status(500).json({ message: "Failed to cancel order" });
@@ -175,6 +216,28 @@ export const updateOrderStatus = async (req, res) => {
     if (paymentStatus) order.paymentStatus = paymentStatus;
 
     const updatedOrder = await order.save();
+
+    // Send Status Update Email
+    try {
+      // We need to populate user to get email for admin status updates
+      const populatedOrder = await Order.findById(order._id).populate("user", "name email");
+
+      await sendEmail({
+        email: populatedOrder.user.email,
+        subject: `Order Update - #${order._id}`,
+        message: `Hi ${populatedOrder.user.name},\n\nYour order #${order._id} status has been updated to: ${status || order.status}.\n\nBest Regards,\nThe FreshMart Team`,
+        html: `
+          <h1>Order Status Update</h1>
+          <p>Hi <strong>${populatedOrder.user.name}</strong>,</p>
+          <p>Your order <strong>#${order._id}</strong> status has been updated to: <strong>${status || order.status}</strong>.</p>
+          <br/>
+          <p>Best Regards,<br/>The FreshMart Team</p>
+        `,
+      });
+    } catch (emailError) {
+      console.error("Status update email failed:", emailError.message);
+    }
+
     res.json(updatedOrder);
   } catch (error) {
     console.error("Update Order Error:", error);
