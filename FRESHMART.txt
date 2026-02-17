@@ -1,0 +1,102 @@
+FRESHMART 
+role auth === http://localhost:5000/api/auth/login http://localhost:5000/api/auth/register
+
+===================ADMIN
+{
+    "name":"newadmin",
+    "email":"newadmin@gmail.com",
+    "password":"newadmin1910",
+    "role":"admin"
+}
+
+{
+    "message": "Login successful",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzMyYjBiYWQ0MjQ5MzZmY2ZjMzliMyIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc2OTE1NTM4NywiZXhwIjoxNzY5NzYwMTg3fQ.WaK-7MauQ397pbcsHsCt3_jsZt_0DkXYhe06g8lDjuc",
+    "user": {
+        "id": "69732b0bad424936fcfc39b3",
+        "name": "newadmin",
+        "email": "newadmin@gmail.com",
+        "role": "admin"
+    }
+}
+
+====================user
+{
+    "message": "Login successful",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzMyYmQ5YWQ0MjQ5MzZmY2ZjMzliNyIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzY5MTU1NjQxLCJleHAiOjE3Njk3NjA0NDF9.ljQsfdw2bg8t06lAxRY5J_n7AsAPwxUYwXjIu4lmGeg",
+    "user": {
+        "id": "69732bd9ad424936fcfc39b7",
+        "name": "newuser",
+        "email": "newuser@gmail.com",
+        "role": "user"
+    }
+}
+
+=================vendor
+{
+    "message": "Login successful",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NzMyY2Q2YWQ0MjQ5MzZmY2ZjMzliYiIsInJvbGUiOiJ2ZW5kb3IiLCJpYXQiOjE3NjkxNTU4NTUsImV4cCI6MTc2OTc2MDY1NX0.NFruiSBs0BGILynKpR2G5_5ykHoT-EOBlcCL6AK6odI",
+    "user": {
+        "id": "69732cd6ad424936fcfc39bb",
+        "name": "newvendor",
+        "email": "newvendor@gmail.com",
+        "role": "vendor"
+    }
+}
+
+
+========================Products add 
+http://localhost:5000/api/products/
+
+{
+    "message": "Product added, waiting for admin approval",
+    "product": {
+        "name": "Fresh banana",
+        "description": "Organic banana",
+        "price": 200,
+        "category": "Fruits",
+        "vendor": "69732cd6ad424936fcfc39bb",
+        "isApproved": false,
+        "_id": "69732ef02eb2462ebf270801",
+        "createdAt": "2026-01-23T08:18:56.393Z",
+        "updatedAt": "2026-01-23T08:18:56.393Z",
+        "__v": 0
+    }
+}
+
+======================admin approved product (id = vendor , auth = admin login token )
+PUT http://localhost:5000/api/products/approve/69732ef02eb2462ebf270801
+{
+    "message": "Product approved",
+    "product": {
+        "_id": "69732ef02eb2462ebf270801",
+        "name": "Fresh banana",
+        "description": "Organic banana",
+        "price": 200,
+        "category": "Fruits",
+        "vendor": "69732cd6ad424936fcfc39bb",
+        "isApproved": true,
+        "createdAt": "2026-01-23T08:18:56.393Z",
+        "updatedAt": "2026-01-23T08:27:26.395Z",
+        "__v": 0
+    }
+}
+=====================user view product 
+GET http://localhost:5000/api/products/
+[
+    {
+        "_id": "69732ef02eb2462ebf270801",
+        "name": "Fresh banana",
+        "description": "Organic banana",
+        "price": 200,
+        "category": "Fruits",
+        "vendor": {
+            "_id": "69732cd6ad424936fcfc39bb",
+            "name": "newvendor"
+        },
+        "isApproved": true,
+        "createdAt": "2026-01-23T08:18:56.393Z",
+        "updatedAt": "2026-01-23T08:27:26.395Z",
+        "__v": 0
+    }
+]
