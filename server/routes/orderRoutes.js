@@ -6,7 +6,8 @@ import {
     getAllOrders,
     updateOrderStatus,
     getOrderById,
-    cancelOrder
+    cancelOrder,
+    generateInvoice
 } from "../controllers/orderController.js";
 import { isAdmin } from "../middleware/roleMiddleware.js";
 
@@ -16,6 +17,7 @@ const router = express.Router();
 router.post("/", protect, createOrder);
 router.get("/my-orders", protect, getUserOrders);
 router.get("/:id", protect, getOrderById);
+router.get("/:id/invoice", protect, generateInvoice);
 router.put("/:id/cancel", protect, cancelOrder);
 
 // Admin Routes
